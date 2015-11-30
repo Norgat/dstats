@@ -167,7 +167,7 @@ def colorize_tournament(current_tournament, previous_tournament):
       else:
         for player in prev_teams[tag]:
           player.PrevCode = prev_teams_count
-        prev_teams_count = prev_teams_count + 1
+        prev_teams_count += 1
 
 
 
