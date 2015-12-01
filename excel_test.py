@@ -103,6 +103,7 @@ class Tournament:
   def __init__(self, sheet):
     self.Title = str(sheet["B2"].value)
     self.NumberOfTeams = int(sheet["D1"].value)
+    self.EndDate = sheet["D2"].value
     self.Sheet = sheet
 
     self.Teams = {}
