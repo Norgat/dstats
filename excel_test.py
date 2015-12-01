@@ -53,9 +53,10 @@ class Player:
   def __repr__(self):
     return "< %s | %s >" % (self.Nickname, self.Team.Tag)
 
-  def write(self, sheet=None):
-    if sheet == None:
-      sheet = self.Sheet
+  def write(self, **kwargs):
+    sheet = self.Sheet
+    if "sheet" in kwargs:
+      sheet = kwargs["sheet"]
     sheet.cell(row = self.Row, column = self.Column).value = self.Nickname
 
     # стиль ячейки не может быть изменён, только перезаписан
@@ -79,20 +80,22 @@ class Team:
   def __repr__(self):
     return self.Tag
 
-  def write(self, sheet=None):
-    none_flag = False
-    if sheet == None:
-      sheet = self.Sheet
-      none_flag = True
+  def write(self, **kwargs):
+    sheet = self.Sheet
+
+    if "sheet" in kwargs:
+      sheet = kwargs["sheet"]
 
     sheet.cell(row = self.Row, column = 1).value = self.Tag
     sheet.cell(row = self.Row, column = 7).value = self.Top
 
-    if none_flag:
-      sheet = None
 
     for player in self.Players:
-      player.write(sheet)
+      player.write(**kwargs)
+
+    if "topdiff" in kwargs:
+      if kwargs["topdiff"]:
+        sheet.cell(row = self.Row, column = 9).value = self.TopDiff
 
 
 class Tournament:
@@ -100,6 +103,7 @@ class Tournament:
   def __init__(self, sheet):
     self.Title = str(sheet["B2"].value)
     self.NumberOfTeams = int(sheet["D1"].value)
+    self.Sheet = sheet
 
     self.Teams = {}
     self.Players = {}
@@ -114,11 +118,10 @@ class Tournament:
   def __repr__(self):
     return "Tournament: %s" % self.Title
 
-  def write(self, sheet=None):
-    none_flag = False
-    if sheet == None:
-      sheet = self.Sheet
-      none_flag = True
+  def write(self, **kwargs):
+    sheet = self.Sheet
+    if "sheet" in kwargs:
+      sheet = kwargs["sheet"]
 
     # write type
     sheet["A1"] = "type"
@@ -137,12 +140,12 @@ class Tournament:
     sheet["D3"], sheet["E3"], sheet["F3"] = "Player 3", "Player 4", "Player 5"
     sheet["G3"] = "Top"
 
-    # write teams data
-    if none_flag == True:
-      sheet = None
+    if "topdiff" in kwargs:
+      if kwargs["topdiff"]:
+        sheet["I3"] = "Top change"
 
     for tag in self.Teams.keys():
-      self.Teams[tag].write(sheet)
+      self.Teams[tag].write(**kwargs)
 
 
 def colorize_tournament(current_tournament, previous_tournament):
@@ -170,6 +173,24 @@ def colorize_tournament(current_tournament, previous_tournament):
         prev_teams_count += 1
 
 
+def compute_teams_top_diff(current_tournament, previous_tournament):
+  for tag in current_tournament.Teams.keys():
+    current_top = current_tournament.Teams[tag].Top
+
+    max_prev_top = 0
+    for player in current_tournament.Teams[tag].Players:
+      if player.Nickname in previous_tournament.Players and (player.PrevCode in set([1,2])):
+        prev_player_place = previous_tournament.Players[player.Nickname].Team.Top
+        if max_prev_top == 0:
+          max_prev_top = prev_player_place
+        elif max_prev_top > prev_player_place:
+          max_prev_top = prev_player_place
+
+    if max_prev_top == 0:
+      current_tournament.Teams[tag].TopDiff = 0
+    else:
+      current_tournament.Teams[tag].TopDiff = max_prev_top - current_top
+
 
 tournaments = []
 
@@ -186,8 +207,9 @@ new_sheet.title = new_sheet_name
 
 TI_2012 = tournaments[1]
 TI_2013 = tournaments[2]
-colorize_tournament(TI_2012, TI_2013)
-TI_2012.write(new_sheet)
+colorize_tournament(TI_2013, TI_2012)
+compute_teams_top_diff(TI_2013, TI_2012)
+TI_2013.write(sheet = new_sheet, topdiff = True)
 
 # Необходимо закрыть Excel для того, чтобы сохранить workbook на диск.
 # Если сохранение не требуется, то закрывать Excel не нужно.
