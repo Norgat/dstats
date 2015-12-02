@@ -134,6 +134,10 @@ class TournamentExcel(Tournament):
     sheet["C1"] = "Number of teams"
     sheet["D1"] = self.NumberOfTeams
 
+    # write end date
+    sheet["C2"] = "date"
+    sheet["D2"] = self.EndDate
+
     # write data column titles
     sheet["A3"], sheet["B3"], sheet["C3"] = "Team", "Player 1", "Player 2"
     sheet["D3"], sheet["E3"], sheet["F3"] = "Player 3", "Player 4", "Player 5"
