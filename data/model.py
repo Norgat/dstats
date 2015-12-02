@@ -14,8 +14,10 @@ class Player(object):
 
 
 class Team(object):
-  def __init__(self, tag):
+  def __init__(self, tag, players, top):
     self.Tag = tag
+    self.Players = players
+    self.Top = top
 
 
 class Tournament(object):

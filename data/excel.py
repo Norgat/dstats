@@ -65,16 +65,15 @@ class TeamExcel(Team):
   def __init__(self, sheet, row_num):
     tag = str(sheet.cell(row = row_num, column = 1).value)
 
-    super(TeamExcel, self).__init__(tag)
-
     self.Sheet = sheet
     self.Row = row_num
 
-    self.Players = set([])
+    players = set([])
     for i in xrange(2, 7):
-      self.Players.add(PlayerExcel(str(sheet.cell(row = row_num, column = i).value), self, sheet, row_num, i))
+      players.add(PlayerExcel(str(sheet.cell(row = row_num, column = i).value), self, sheet, row_num, i))
 
-    self.Top = int( sheet.cell(row = row_num, column = 7).value )
+    top = int( sheet.cell(row = row_num, column = 7).value )
+    super(TeamExcel, self).__init__(tag, players, top)
 
   def __repr__(self):
     return self.Tag
