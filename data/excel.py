@@ -1,10 +1,11 @@
 # -*- encoding: utf-8 -*-
 
-# TODO: Вынести общие версии Player, Team и Tournament в отдельный пакет.
 
 # DOC: https://openpyxl.readthedocs.org/en/default/
 import openpyxl as excel
 import openpyxl.styles as excel_styles
+
+from model import *
 
 
 def get_sheet_type(sheet):
@@ -26,11 +27,13 @@ for color in ColorToCodes.keys():
   CodesToColor[ ColorToCodes[color] ] = color
 
 
-class Player:
+class PlayerExcel(Player):
   """Dota 2 Player"""
   def __init__(self, nickname, team, sheet, row_num, col_num):
-    self.Nickname = nickname.lower()
-    self.Team = team
+    nickname = nickname.lower()
+
+    super(PlayerExcel, self).__init__(nickname, team)
+
     self.Sheet = sheet
     self.Row = row_num
     self.Column = col_num
@@ -42,11 +45,6 @@ class Player:
     else:
       self.PrevCode = 0
 
-  def __eq__(self, other):
-    return self.Nickname == other.Nickname
-
-  def __hash__(self):
-    return hash(self.Nickname)
 
   def __repr__(self):
     return "< %s | %s >" % (self.Nickname, self.Team.Tag)
@@ -62,16 +60,19 @@ class Player:
     sheet.cell(row = self.Row, column = self.Column).fill = fill_pattern
 
 
-class Team:
+class TeamExcel(Team):
   """Dota 2 team class."""
   def __init__(self, sheet, row_num):
-    self.Tag = str(sheet.cell(row = row_num, column = 1).value)
+    tag = str(sheet.cell(row = row_num, column = 1).value)
+
+    super(TeamExcel, self).__init__(tag)
+
     self.Sheet = sheet
     self.Row = row_num
 
     self.Players = set([])
     for i in xrange(2, 7):
-      self.Players.add(Player(str(sheet.cell(row = row_num, column = i).value), self, sheet, row_num, i))
+      self.Players.add(PlayerExcel(str(sheet.cell(row = row_num, column = i).value), self, sheet, row_num, i))
 
     self.Top = int( sheet.cell(row = row_num, column = 7).value )
 
@@ -96,23 +97,22 @@ class Team:
         sheet.cell(row = self.Row, column = 9).value = self.TopDiff
 
 
-class Tournament:
+class TournamentExcel(Tournament):
   """Dota 2 tournament class."""
   def __init__(self, sheet):
-    self.Title = str(sheet["B2"].value)
+    title = str(sheet["B2"].value)
+    end_date = sheet["D2"].value
+
     self.NumberOfTeams = int(sheet["D1"].value)
-    self.EndDate = sheet["D2"].value
     self.Sheet = sheet
 
-    self.Teams = {}
-    self.Players = {}
+    teams = {}
 
     for i in xrange(4, 4 + self.NumberOfTeams):
-      tmp_team = Team(sheet, i)
-      self.Teams[tmp_team.Tag] = tmp_team
+      tmp_team = TeamExcel(sheet, i)
+      teams[tmp_team.Tag] = tmp_team
 
-      for player in tmp_team.Players:
-        self.Players[player.Nickname] = player
+    super(TournamentExcel, self).__init__(title, teams, end_date)
 
   def __repr__(self):
     return "Tournament: %s" % self.Title

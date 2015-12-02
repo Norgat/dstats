@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+
 # DOC: https://openpyxl.readthedocs.org/en/default/
 import openpyxl as excel
 from data.excel import *
@@ -14,7 +15,7 @@ print "Sheet list:"
 for sheet_name in wb.get_sheet_names():
   print "%s: %s" % (sheet_name, get_sheet_type(wb[sheet_name]))
   if (get_sheet_type(wb[sheet_name])) == "tournament":
-    tournaments.append( Tournament(wb[sheet_name]) )
+    tournaments.append( TournamentExcel(wb[sheet_name]) )
 
 # test adding new sheet
 new_sheet_name = "New sheet " + str( len(tournaments) )
