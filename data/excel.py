@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+# TODO: Вынести общие версии Player, Team и Tournament в отдельный пакет.
+
 # DOC: https://openpyxl.readthedocs.org/en/default/
 import openpyxl as excel
 import openpyxl.styles as excel_styles
