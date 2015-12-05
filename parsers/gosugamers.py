@@ -32,7 +32,7 @@ soup = BeautifulSoup(data)
 def get_main_bracket(brackets):
   for bracket in brackets:
     bracket_type = bracket.h2.span.string
-    if bracket_type == "Main Event":
+    if "Main Event" in bracket_type:
       return  bracket
   return None
 
