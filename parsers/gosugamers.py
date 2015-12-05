@@ -20,4 +20,4 @@ def get_tournament_list(page_url, from_page, to_page):
   return result
 
 
-print get_tournament_list(tournaments_list_test_url, 1, 1)
+# print get_tournament_list(tournaments_list_test_url, 1, 1)
