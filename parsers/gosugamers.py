@@ -73,7 +73,7 @@ def parse_match(link):
   for team in [team_one, team_two]:
     tag = " ".join(team.find("label", "team-name").string.split())
     player_sources = team.find_all("div", "pick-row")
-    result[tag] = [ p.a.string for p in player_sources]
+    result[tag] = [p.a.string for p in player_sources]
 
   return result
 
