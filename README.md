@@ -4,7 +4,7 @@
 
 *Python* 2.7
 
-*Dependencies*: openpyxl
+*Dependencies*: openpyxl, beautifulsoup4
 
 *IDE*: IntelliJ Community Edition 15 with [Python plugin](https://confluence.jetbrains.com/display/PYH/PyCharm+IDE+and+Python+Plugin+for+IntelliJ+IDEA)
 
